@@ -1,0 +1,28 @@
+# editor config
+.idea/
+
+# cache
+__pycache__/
+
+# data
+postgres_data
+mongo_data
+minio_config
+minio_data
+monitors/grafana_data
+monitors/prometheus_data
+monitors/loki_data
+monitors/tempo_data
+
+# credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# dependencies
+poetry.lock
+
+# opa
+app/opa/bundle.tar.gz
+.venv

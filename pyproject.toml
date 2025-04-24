@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "PythonProject"
+version = "0.1.0"
+description = ""
+authors = ["Nguyen Minh Tri <nguyenminhtri11101999@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+# be
+python = "^3.10.9"
+fastapi = "0.109.1"
+fastapi-users = {extras = ["oauth", "sqlalchemy"], version = "^12.1.1"}
+uvicorn = {extras = ["standard"], version = "^0.23.2"}
+gunicorn = "^21.2.0"
+pydantic = "<2.0.0"
+google-api-python-client = "^2.166.0"
+google-auth-httplib2 = "^0.2.0"
+google-auth-oauthlib = "^1.2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
