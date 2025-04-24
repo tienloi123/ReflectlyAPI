@@ -4,17 +4,26 @@ import re
 from fastapi import UploadFile
 from pydantic import BaseModel, root_validator, validator
 
-from app.constant import AppStatus
+from app.constant import AppStatus, FeedbackStatus, FEEDBACK_FIELD_LABELS
 from app.core import error_exception_handler
 
 logger = logging.getLogger(__name__)
 
 class FeedbackCreate(BaseModel):
-    full_name: str | None = None
+    full_name: str
     phone_number: str | None = None
     email: str | None = None
-    content: str
-    files: list[UploadFile] | None = None
+    conversation_code: str
+    issue: str
+    status: FeedbackStatus = FeedbackStatus.OPEN
+
+    @validator('conversation_code', 'issue')
+    def not_empty(cls, v, field):
+        if not v or not v.strip():
+            msg = f"{FEEDBACK_FIELD_LABELS[field.name]} không được để trống."
+            logger.error(msg, exc_info=ValueError(AppStatus.ERROR_400_INVALID_DATA))
+            raise error_exception_handler(app_status=AppStatus.ERROR_400_INVALID_DATA, description=msg)
+        return v
 
     @root_validator(pre=True)
     def check_values(cls, values):

@@ -20,7 +20,6 @@ class Settings(BaseSettings):
     GOOGLE_PRIVATE_KEY_ID: str = "your-google-private-key-id"
     GOOGLE_PRIVATE_KEY: str = "your-google-private-key"
     GOOGLE_SPREADSHEET_ID: str = "your-google-spreadsheet-id"
-    GOOGLE_DRIVE_FOLDER_ID: str = "your-google-drive-folder-id"
     GOOGLE_API_KEY: str = "your-google-api-key"
 
 env_file = os.getenv('ENV_FILE', '.env.dev')

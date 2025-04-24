@@ -1,12 +1,8 @@
-import io
 import logging
-import uuid
 from datetime import datetime
 
-from fastapi import UploadFile
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
 
 from app.constant import GOOGLE_SCOPES, AppStatus
 from app.core import settings, error_exception_handler
@@ -17,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 class FeedbackService:
     def __init__(self):
-        self.drive_service = self._get_service('drive', 'v3')
         self.sheet_service = self._get_service('sheets', 'v4')
 
     @staticmethod
@@ -39,28 +34,6 @@ class FeedbackService:
             scopes=GOOGLE_SCOPES
         )
         return build(api, version, credentials=creds, cache_discovery=False)
-
-    def upload_multiple_to_drive(self, folder_name: str, files: list[UploadFile]):
-        folder_metadata = {
-            'name': folder_name,
-            'mimeType': 'application/vnd.google-apps.folder',
-            'parents': [settings.GOOGLE_DRIVE_FOLDER_ID]
-        }
-        folder = self.drive_service.files().create(body=folder_metadata, fields='id').execute()
-        folder_id = folder.get('id')
-
-        for file in files:
-            file_data = io.BytesIO(file.file.read())
-            media = MediaIoBaseUpload(file_data, mimetype='application/octet-stream')
-
-            file_metadata = {
-                'name': file.filename,
-                'parents': [folder_id]
-            }
-            self.drive_service.files().create(body=file_metadata, media_body=media, fields='id, webViewLink').execute()
-
-        folder_link = f'https://drive.google.com/drive/folders/{folder_id}'
-        return folder_link
 
     def insert_data_to_sheet(self, values: list[list[str]]):
         sheet_metadata = self.sheet_service.spreadsheets().get(spreadsheetId=settings.GOOGLE_SPREADSHEET_ID).execute()
@@ -84,16 +57,8 @@ class FeedbackService:
         request.execute()
 
     async def create_feedback(self, feedback_data: FeedbackCreate):
-        folder_link = ""
-        feedback_id = str(uuid.uuid4())
-        if feedback_data.files:
-            folder_link = self.upload_multiple_to_drive(folder_name=feedback_id, files=feedback_data.files)
-
         values = {
-            "id": feedback_id,
             **feedback_data.dict(),
-            "folder_link": folder_link,
             "created_at": convert_datetime_to_str(datetime.now()),
         }
-        del values["files"]
         self.insert_data_to_sheet(values=[list(values.values())])

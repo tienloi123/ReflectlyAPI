@@ -1,16 +1,5 @@
-import json
 import logging
-import re
-from datetime import datetime, date
-from enum import Enum
-from typing import Dict, Any, List
-from urllib.parse import unquote
-
-import unicodedata
-from rapidfuzz import fuzz, process
-
-from app.constant import AppStatus
-from app.core import error_exception_handler
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
