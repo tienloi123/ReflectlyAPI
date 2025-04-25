@@ -1,1 +1,1 @@
-from .feedback_schemas import FeedbackCreate
+from .feedback_schemas import FeedbackBase
